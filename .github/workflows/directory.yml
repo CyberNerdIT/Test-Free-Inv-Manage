@@ -1,0 +1,40 @@
+# Validate the community registry on every change.
+#
+# Two passes:
+#   * schema/duplicates — always, and blocking. A malformed entry would be read
+#     by every shop that fetches the file.
+#   * live ownership    — on pull requests only, and advisory. It confirms each
+#     listed shop actually controls its URL, but a small shop being briefly
+#     offline must not block an unrelated change.
+name: directory
+
+on:
+  push:
+    paths: ['directory/**', 'src/services/registry.js', 'tools/validate-registry.js']
+  pull_request:
+    paths: ['directory/**', 'src/services/registry.js', 'tools/validate-registry.js']
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate registry (schema, duplicates, regions)
+        run: node tools/validate-registry.js
+
+      # Only on PRs: a push to main has already been reviewed, and re-checking
+      # every shop on every commit would hammer people's servers.
+      - name: Verify shop ownership (advisory)
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        run: node tools/validate-registry.js --live
+
+      - name: Unit tests for the registry rules
+        run: npm test

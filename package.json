@@ -1,0 +1,23 @@
+{
+  "name": "inventory-management",
+  "version": "1.0.0",
+  "description": "Inventory management for buying, refurbishing and reselling computers and components — cost tracking, profit/break-even analysis, profit graphs, and eBay/Amazon price comparison.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "start": "node --experimental-sqlite src/server.js",
+    "dev": "node --experimental-sqlite --watch src/server.js",
+    "test": "INV_DB_PATH=:memory: node --experimental-sqlite --test"
+  },
+  "keywords": [
+    "inventory",
+    "reselling",
+    "refurbishing",
+    "profit",
+    "ebay",
+    "amazon"
+  ],
+  "license": "MIT"
+}

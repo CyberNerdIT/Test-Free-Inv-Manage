@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create admin — Tech Garage</title>
+  <link rel="stylesheet" href="/css/style.css?v=20260805f" />
+  <link rel="stylesheet" href="/api/theme.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>" />
+</head>
+<body>
+  <div class="auth-wrap">
+    <form class="auth-card" id="setupForm">
+      <div class="brand"><span class="logo">💻</span> Welcome</div>
+      <div class="sub">Create the administrator account to get started. This is the first and only account with access to the Admin settings.</div>
+      <div class="err" id="err"></div>
+      <label class="field"><span class="lbl">Admin username</span><input id="username" autocomplete="username" autofocus /></label>
+      <label class="field"><span class="lbl">Password (min 8 characters)</span><input id="password" type="password" autocomplete="new-password" /></label>
+      <label class="field"><span class="lbl">Confirm password</span><input id="confirm" type="password" autocomplete="new-password" /></label>
+      <button class="btn" type="submit" id="submitBtn">Create admin &amp; continue</button>
+    </form>
+  </div>
+  <script type="module" src="/js/auth.js?v=20260805f"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tech Garage — Refurbished tech at a fraction of retail</title>
+  <link rel="stylesheet" href="/css/style.css?v=20260805f" />
+  <link rel="stylesheet" href="/api/theme.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>" />
+</head>
+<body class="landing">
+  <div class="nav">
+    <div class="brand"><span class="logo">💻</span> <span data-brand-name>Tech Garage</span></div>
+    <div class="spacer"></div>
+    <a class="site-ext-link" data-site-link target="_blank" rel="noopener" style="display:none">Website</a>
+    <a class="btn" href="/login">Sign in / Sign up</a>
+  </div>
+
+  <section class="hero">
+    <h1>Quality refurbished tech.<br><span class="grad">Prices that aren't.</span></h1>
+    <p class="lead">
+      Hand-tested laptops, desktops and components — fully refurbished and priced
+      well below retail. See how much you could save versus buying new.
+    </p>
+    <div class="cta">
+      <a href="/login"><button class="btn big">Sign in / Sign up</button></a>
+      <a href="#deals"><button class="btn big secondary">See sample savings</button></a>
+    </div>
+  </section>
+
+  <section class="deals" id="dealsGrid"><!-- populated from /api/branding by brand.js --></section>
+  <p class="deals-note">
+    Sample savings shown for illustration — these aren't live listings, and actual
+    stock &amp; pricing vary. <a href="/login">Sign in</a> to browse what's currently available.
+  </p>
+
+  <div class="foot">
+    <a class="host-tag" href="/host">🛠️ Want to host your own <span data-brand-name>Tech Garage</span>?</a>
+  </div>
+  <script src="/js/brand.js?v=20260805f"></script>
+</body>
+</html>

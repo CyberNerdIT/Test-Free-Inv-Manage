@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Set a new password — Tech Garage</title>
+  <link rel="stylesheet" href="/css/style.css?v=20260805f" />
+  <link rel="stylesheet" href="/api/theme.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>" />
+</head>
+<body>
+  <div class="auth-wrap">
+    <form class="auth-card" id="resetForm">
+      <div class="brand"><span class="logo">💻</span> New password</div>
+      <div class="sub" id="sub">Checking your reset link…</div>
+      <div class="err" id="err"></div>
+      <div id="fields" style="display:none">
+        <label class="field"><span class="lbl">New password (min 8)</span><input id="password" type="password" autocomplete="new-password" /></label>
+        <label class="field"><span class="lbl">Confirm</span><input id="confirm" type="password" autocomplete="new-password" /></label>
+        <button class="btn" type="submit" id="submitBtn">Set password &amp; sign in</button>
+      </div>
+    </form>
+  </div>
+  <script type="module">
+    const $ = (s) => document.querySelector(s);
+    const token = decodeURIComponent(location.pathname.replace(/^\/reset\/?/, '').split('/')[0] || '');
+    const showErr = (m) => { const e = $('#err'); e.textContent = m; e.classList.add('show'); };
+    (async () => {
+      if (!token) { $('#sub').textContent = 'This reset link is invalid.'; return; }
+      const r = await fetch('/api/auth/reset/' + encodeURIComponent(token)).then((x) => x.json()).catch(() => ({}));
+      if (!r.valid) { $('#sub').textContent = 'This reset link is invalid or has expired. Request a new one.'; return; }
+      $('#sub').textContent = `Set a new password for ${r.username}.`;
+      $('#fields').style.display = 'block';
+    })();
+    $('#resetForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pw = $('#password').value;
+      if (pw.length < 8) return showErr('Password must be at least 8 characters.');
+      if (pw !== $('#confirm').value) return showErr('Passwords do not match.');
+      $('#submitBtn').disabled = true;
+      try {
+        const res = await fetch('/api/auth/reset/' + encodeURIComponent(token), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pw }) });
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.error || 'failed');
+        window.location = '/login';
+      } catch (err) { showErr(err.message); $('#submitBtn').disabled = false; }
+    });
+  </script>
+</body>
+</html>

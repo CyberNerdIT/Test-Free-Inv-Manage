@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Tech Garage</title>
+  <link rel="stylesheet" href="/css/style.css?v=20260805f" />
+  <link rel="stylesheet" href="/api/theme.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>" />
+</head>
+<body>
+  <header class="app-header">
+    <h1><span class="logo">⚙️</span> Admin</h1>
+    <div class="user-menu" id="userMenu"></div>
+  </header>
+
+  <main class="admin-main">
+    <a class="admin-back" href="/app">← Back to inventory</a>
+
+    <div class="admin-layout">
+      <!-- Side panel: jump to any section (opens it too) -->
+      <nav class="admin-nav" id="adminNav" aria-label="Admin sections">
+        <a href="#users">Users &amp; access</a>
+        <a href="#requests">Purchase requests</a>
+        <a href="#visitors">Visitor activity</a>
+        <a href="#subscriptions">Stock subscriptions</a>
+        <a href="#resets">Password resets</a>
+        <a href="#apis">API integrations</a>
+        <a href="#pricing">Pricing defaults</a>
+        <a href="#notifications">Notifications</a>
+        <a href="#branding">Site &amp; branding</a>
+        <a href="#storefront">Storefront</a>
+        <a href="#community">Community directory</a>
+        <a href="#upgrade">Pro upgrade</a>
+        <button class="btn secondary small" id="expandAllBtn" type="button" style="margin-top:8px">Expand all</button>
+      </nav>
+
+      <div class="admin-content">
+        <!-- API integrations -->
+        <details id="apis" class="card admin-section">
+          <summary>API integrations</summary>
+          <div class="details-body">
+            <div id="apiPlanNote" class="card-sub" style="margin-bottom:14px"></div>
+            <div class="section-title" style="margin-top:0">eBay API <span id="ebayBadge"></span></div>
+            <div class="card-sub">Used for live active-listing comps (Browse API). Recently-sold comps need Marketplace Insights approval. Get keys at <span class="mono">developer.ebay.com</span>.</div>
+            <div class="grid-2">
+              <label class="field"><span class="lbl">Client ID</span><input id="ebayClientId" autocomplete="off" /></label>
+              <label class="field"><span class="lbl">Client Secret</span><input id="ebayClientSecret" type="password" autocomplete="off" placeholder="" /></label>
+              <label class="field"><span class="lbl">Environment</span>
+                <select id="ebayEnv"><option value="PRODUCTION">PRODUCTION</option><option value="SANDBOX">SANDBOX</option></select>
+              </label>
+              <label class="field"><span class="lbl">Marketplace</span><input id="ebayMarketplace" placeholder="EBAY_US" /></label>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center">
+              <button class="btn" data-save>Save eBay settings</button>
+              <button class="btn secondary small" data-clear-secret="ebay">Clear secret</button>
+            </div>
+
+            <div class="section-title">Amazon API <span id="amazonBadge"></span></div>
+            <div class="card-sub">Product Advertising API v5 (SearchItems). Requires an approved Amazon Associates account. Amazon provides active offers only (no sold history).</div>
+            <div class="grid-2">
+              <label class="field"><span class="lbl">Access Key</span><input id="amazonAccessKey" autocomplete="off" /></label>
+              <label class="field"><span class="lbl">Secret Key</span><input id="amazonSecretKey" type="password" autocomplete="off" /></label>
+              <label class="field"><span class="lbl">Partner Tag</span><input id="amazonPartnerTag" autocomplete="off" /></label>
+              <label class="field"><span class="lbl">Region</span><input id="amazonRegion" placeholder="us-east-1" /></label>
+              <label class="field"><span class="lbl">Host</span><input id="amazonHost" placeholder="webservices.amazon.com" /></label>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center">
+              <button class="btn" data-save>Save Amazon settings</button>
+              <button class="btn secondary small" data-clear-secret="amazon">Clear secret</button>
+            </div>
+
+            <div class="section-title">Notification integrations</div>
+            <div class="card-sub">Connect the services used to send purchase alerts and emails. Turn each one on for notifications under <a href="#notifications">Notifications</a>.</div>
+
+            <div class="lbl" style="margin:14px 0 4px">Email (SMTP) <span id="smtpBadge"></span></div>
+            <div class="grid-3">
+              <label class="field"><span class="lbl">SMTP host</span><input id="smtpHost" placeholder="smtp.gmail.com" /></label>
+              <label class="field"><span class="lbl">Port</span><input id="smtpPort" type="number" placeholder="587" /></label>
+              <label class="field"><span class="lbl">Security</span><select id="smtpSecure"><option value="false">STARTTLS (587)</option><option value="true">SSL/TLS (465)</option></select></label>
+              <label class="field"><span class="lbl">Username</span><input id="smtpUser" autocomplete="off" /></label>
+              <label class="field"><span class="lbl">Password</span><input id="smtpPass" type="password" autocomplete="off" /></label>
+              <label class="field"><span class="lbl">From address</span><input id="smtpFrom" placeholder="you@example.com" /></label>
+            </div>
+            <div class="card-sub">Used for password‑reset, welcome and stock-alert emails, plus the Email notification channel. Gmail needs an <strong>App Password</strong>. Purchase alerts go to your admin email (⚙ Account menu).</div>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+              <button class="btn" data-save>Save email settings</button>
+              <button class="btn secondary small" data-clear-secret="email">Clear password</button>
+              <button class="btn secondary small" id="testEmailBtn" type="button">Send test email</button>
+              <span id="testEmailMsg" style="font-size:12px"></span>
+            </div>
+
+            <div class="lbl" style="margin:18px 0 4px">WhatsApp <span id="waBadge"></span></div>
+            <div class="card-sub">From the WhatsApp Business Cloud API: an access token, your phone-number ID, and the number to alert. Business-initiated messages must use a <strong>pre-approved template</strong> — plain text only delivers within 24h of the recipient last messaging you, so template mode is the default. <span class="mono">hello_world</span> is pre-approved on every account and works immediately for testing; create your own template with a <span class="mono">{{1}}</span> body variable to include the request details. The token on Meta's API Setup page expires after 24h; the Pro bundle ships <span class="mono">pro/docs/whatsapp.md</span> with the steps for a permanent one.</div>
+            <div class="grid-2">
+              <label class="field"><span class="lbl">Access token</span><input id="waToken" type="password" autocomplete="off" /></label>
+              <label class="field"><span class="lbl">Phone number ID</span><input id="waPhoneId" autocomplete="off" /></label>
+              <label class="field"><span class="lbl">Send to (E.164)</span><input id="waTo" placeholder="+15551234567" /></label>
+              <label class="field"><span class="lbl">API version</span><input id="waApiVersion" placeholder="v20.0" /></label>
+            </div>
+            <div class="grid-3">
+              <label class="field"><span class="lbl">Message format</span>
+                <select id="waMsgType">
+                  <option value="template">Template (recommended)</option>
+                  <option value="text">Session text (24h window only)</option>
+                </select>
+              </label>
+              <label class="field"><span class="lbl">Template name</span><input id="waTemplate" placeholder="hello_world" autocomplete="off" /></label>
+              <label class="field"><span class="lbl">Template language</span><input id="waLang" placeholder="en_US" autocomplete="off" /></label>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;margin:2px 0 8px">
+              <input type="checkbox" id="waBodyParam" style="width:auto" />
+              My template has a text body variable — send the alert details as <span class="mono">{{1}}</span> (leave off for <span class="mono">hello_world</span>).
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;margin:2px 0 10px">
+              <input type="checkbox" id="waUpdatesOn" style="width:auto" />
+              Also send stock/availability alerts to customers over WhatsApp (for customers who add a phone number to their profile).
+            </label>
+            <div style="display:flex;gap:10px;align-items:center"><button class="btn" data-save>Save WhatsApp</button><button class="btn secondary small" data-clear-secret="whatsapp">Clear token</button></div>
+
+            <div class="lbl" style="margin:18px 0 4px">Discord <span id="discordBadge"></span></div>
+            <div class="card-sub">Server Settings → Integrations → Webhooks → copy the Webhook URL.</div>
+            <label class="field"><span class="lbl">Discord webhook URL</span><input id="discordWebhook" type="password" autocomplete="off" /></label>
+            <div style="display:flex;gap:10px;align-items:center"><button class="btn" data-save>Save Discord</button><button class="btn secondary small" data-clear-secret="discord">Clear webhook</button></div>
+
+            <div class="lbl" style="margin:18px 0 4px">Telegram <span id="tgBadge"></span></div>
+            <div class="card-sub">Create a bot with @BotFather for the token; get your chat ID from @userinfobot.</div>
+            <div class="grid-2">
+              <label class="field"><span class="lbl">Bot token</span><input id="tgBotToken" type="password" autocomplete="off" /></label>
+              <label class="field"><span class="lbl">Chat ID</span><input id="tgChatId" autocomplete="off" /></label>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center"><button class="btn" data-save>Save Telegram</button><button class="btn secondary small" data-clear-secret="telegram">Clear token</button></div>
+          </div>
+        </details>
+
+        <!-- Pricing defaults -->
+        <details id="pricing" class="card admin-section">
+          <summary>Pricing defaults</summary>
+          <div class="details-body">
+            <div class="card-sub">Applied to break-even and suggested-price math when an item doesn't override them.</div>
+            <div class="grid-3">
+              <label class="field"><span class="lbl">Marketplace fee (%)</span><input id="defaultFeeRate" type="number" step="0.1" /></label>
+              <label class="field"><span class="lbl">Flat fee per sale ($)</span><input id="defaultFlatFee" type="number" step="0.01" /></label>
+              <label class="field"><span class="lbl">Target margin (%)</span><input id="defaultTargetMargin" type="number" step="1" /></label>
+            </div>
+            <button class="btn" data-save>Save defaults</button>
+          </div>
+        </details>
+
+        <!-- Notifications: which channels fire, plus email templates -->
+        <details id="notifications" class="card admin-section">
+          <summary>Notifications <span id="notifyBadge"></span></summary>
+          <div class="details-body">
+            <!-- Purchase-alert channel toggles -->
+            <div class="section-title" style="margin-top:0">Purchase alerts</div>
+            <div class="card-sub">Turn on the connected channels that should ping you when a customer requests to purchase. Requests are always saved under “Purchase requests” even with everything off. Connect a channel under <a href="#apis">API integrations</a>.</div>
+            <div id="channelToggles"></div>
+            <div style="margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+              <button class="btn" data-save>Save notification settings</button>
+              <button class="btn secondary" id="testChannelBtn" type="button">Send test to enabled channels</button>
+              <span id="testChannelMsg" style="font-size:12px"></span>
+            </div>
+
+            <!-- Welcome email -->
+            <div class="section-title" style="margin-top:24px">Welcome email (waitlist approval)</div>
+            <div class="card-sub">Sent when you approve a waitlist signup. It carries their invite link. Placeholders: <span class="mono">{{name}}</span>, <span class="mono">{{link}}</span> (invite URL), <span class="mono">{{brand}}</span>.</div>
+            <label class="field"><span class="lbl">Subject</span><input id="welcomeEmailSubject" placeholder="You're in — set up your account" /></label>
+            <div class="grid-2" style="align-items:start">
+              <label class="field"><span class="lbl">HTML body</span><textarea id="welcomeEmailHtml" rows="12" style="font-family:ui-monospace,monospace;font-size:12px"></textarea></label>
+              <div>
+                <span class="lbl">Live preview</span>
+                <iframe id="welcomePreview" title="Welcome email preview" sandbox="" style="width:100%;height:280px;border:1px solid var(--border);border-radius:8px;background:#fff"></iframe>
+              </div>
+            </div>
+            <button class="btn" data-save>Save welcome email</button>
+
+            <!-- Password reset email -->
+            <div class="section-title" style="margin-top:24px">Password reset email</div>
+            <div class="card-sub">The HTML emailed to a user when they request a password reset. Placeholders: <span class="mono">{{name}}</span>, <span class="mono">{{username}}</span>, <span class="mono">{{link}}</span> (the reset URL).</div>
+            <label class="field"><span class="lbl">Subject</span><input id="resetEmailSubject" placeholder="Reset your password" /></label>
+            <div class="grid-2" style="align-items:start">
+              <label class="field"><span class="lbl">HTML body</span><textarea id="resetEmailHtml" rows="12" style="font-family:ui-monospace,monospace;font-size:12px"></textarea></label>
+              <div>
+                <span class="lbl">Live preview</span>
+                <iframe id="resetPreview" title="Reset email preview" sandbox="" style="width:100%;height:280px;border:1px solid var(--border);border-radius:8px;background:#fff"></iframe>
+              </div>
+            </div>
+            <button class="btn" data-save>Save reset email</button>
+          </div>
+        </details>
+
+        <!-- Site & branding: name/tagline + external website link -->
+        <details id="branding" class="card admin-section">
+          <summary>Site &amp; branding</summary>
+          <div class="details-body">
+            <div class="section-title" style="margin-top:0">Branding</div>
+            <div class="card-sub">Rename the app and its tagline — shown on the landing, login and storefront pages. Handy if you fork/share the project.</div>
+            <div class="grid-2">
+              <label class="field"><span class="lbl">Site name</span><input id="brandName" placeholder="Tech Garage" /></label>
+              <label class="field"><span class="lbl">Tagline</span><input id="brandTagline" placeholder="Track your tech stock. Know your profit." /></label>
+            </div>
+            <div class="card-sub" style="margin:6px 0 12px">The landing page always carries a “Want to host your own?” link to the open-source project. This build is that project, so the link stays.</div>
+            <button class="btn" data-save>Save branding</button>
+
+            <div class="section-title" style="margin-top:22px">Colour scheme</div>
+            <div class="card-sub">Applies everywhere — this admin portal, the inventory app, the customer storefront and the public landing page. Each scheme ships a matching light and dark palette.</div>
+            <div id="themePresets" class="theme-presets"></div>
+            <label class="field" style="max-width:320px;margin-top:14px"><span class="lbl">Appearance</span>
+              <select id="themeMode">
+                <option value="auto">Follow the visitor's device</option>
+                <option value="light">Always light</option>
+                <option value="dark">Always dark</option>
+              </select>
+            </label>
+
+            <div class="section-title" style="margin-top:22px">Custom colours <span class="pill" id="themeUpgradePill">Pro</span></div>
+            <div class="card-sub" id="themeUpgradeNote">Setting every colour individually is part of the Pro upgrade, which this build does not include.</div>
+
+            <div class="section-title" style="margin-top:22px">Website link</div>
+            <div class="card-sub">Shows a link to your site on the landing page and the customer storefront.</div>
+            <div class="grid-2">
+              <label class="field"><span class="lbl">Website URL</span><input id="siteUrl" placeholder="https://monhe.it/" /></label>
+              <label class="field"><span class="lbl">Display name (optional)</span><input id="siteName" placeholder="monhe.it" /></label>
+            </div>
+            <button class="btn" data-save>Save website link</button>
+
+            <div class="section-title" style="margin-top:22px">Landing deals</div>
+            <div class="card-sub">The “savings” cards on the public landing page. Add a manual illustrative card, or <strong>pick a real inventory item</strong> to advertise — a linked card pulls the item's live title, price and photo and disappears automatically once it sells. Leave “Was” blank to hide the savings badge.</div>
+            <div id="dealsEditor"></div>
+            <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+              <button class="btn secondary small" id="addFromInvBtn" type="button">📦 Add from inventory</button>
+              <button class="btn secondary small" id="addDealBtn" type="button">+ Add manual card</button>
+              <button class="btn" id="saveDealsBtn" type="button">Save landing deals</button>
+              <span id="dealsMsg" style="font-size:12px"></span>
+            </div>
+          </div>
+        </details>
+
+        <!-- Visitor activity -->
+        <!-- Storefront: what shoppers see and how much they are told -->
+        <details id="storefront" class="card admin-section">
+          <summary>Storefront</summary>
+          <div class="details-body">
+            <div class="section-title" style="margin-top:0">Condition definitions</div>
+            <div class="card-sub">“Refurbished” means different things to different sellers. Your own sentence appears on the item page — one honest line builds more trust than a badge does. Leave any blank to hide it.</div>
+            <div id="condNotes"></div>
+            <button class="btn" id="condSave">Save definitions</button>
+
+            <div class="section-title" style="margin-top:22px">Shopper options</div>
+            <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;cursor:pointer;margin:8px 0">
+              <input type="checkbox" id="shopOrderEmails" style="width:auto;margin-top:3px" />
+              <span><strong>Email customers about their requests.</strong> Sends a receipt when they order and an update whenever you move it along. Needs SMTP under <a href="#apis">API integrations</a>.</span>
+            </label>
+            <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;cursor:pointer;margin:8px 0">
+              <input type="checkbox" id="shopPublicCatalog" style="width:auto;margin-top:3px" />
+              <span><strong>Let anyone browse the shop without signing in.</strong> Prices and photos become public; requesting a purchase still requires an account. Off by default — this is a business decision, not a technical one.</span>
+            </label>
+            <button class="btn" id="shopOptsSave">Save shopper options</button>
+          </div>
+        </details>
+
+        <!-- Community directory: register the shop, share listings, invite friends -->
+        <details id="community" class="card admin-section">
+          <summary>Community directory <span id="dirBadge" class="pill off">off</span></summary>
+          <div class="details-body">
+            <div class="callout" id="dirIntro" style="margin-bottom:14px"></div>
+
+            <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;cursor:pointer;margin:8px 0">
+              <input type="checkbox" id="dirEnabled" style="width:auto;margin-top:3px" />
+              <span><strong>List this shop in the Tech Garage community directory.</strong>
+                Other shops nearby can then link to your listings, and yours can show theirs.
+                Nothing is sent until you turn this on, and each item is shared individually.</span>
+            </label>
+
+            <div class="section-title" style="margin-top:18px">Your region</div>
+            <div class="card-sub">Used only to answer “is this shop near me?”. Deliberately coarse — no street, no postcode beyond a district prefix, no coordinates, and never guessed from your IP address.</div>
+            <div class="grid-2">
+              <label class="field"><span class="lbl">Country (2 letters)</span><input id="dirCountry" maxlength="2" placeholder="US" /></label>
+              <label class="field"><span class="lbl">State / region</span><input id="dirState" placeholder="New York" /></label>
+              <label class="field"><span class="lbl">Town / city</span><input id="dirArea" placeholder="Brooklyn" /></label>
+              <label class="field"><span class="lbl">Postcode prefix (optional)</span><input id="dirPostal" maxlength="4" placeholder="112" /></label>
+            </div>
+            <div class="section-title" style="margin-top:18px">How shops find each other</div>
+            <label class="field" style="max-width:420px"><span class="lbl">Directory mode</span>
+              <select id="dirMode">
+                <option value="repo">Repository list (no server to host)</option>
+                <option value="server">Hosted directory server</option>
+              </select>
+            </label>
+            <div class="card-sub" id="dirModeNote"></div>
+            <div class="grid-2">
+              <label class="field" id="registryUrlField"><span class="lbl">Registry file</span><input id="dirRegistryUrl" placeholder="https://raw.githubusercontent.com/…/directory/nodes.json" /></label>
+              <label class="field" id="serverUrlField"><span class="lbl">Directory server</span><input id="dirUrl" placeholder="https://directory.techgarage.community" /></label>
+              <label class="field"><span class="lbl">Public contact (optional)</span><input id="dirContact" placeholder="hello@myshop.example" /></label>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+              <button class="btn" id="dirSave">Save</button>
+              <button class="btn secondary small" id="dirEntry">Copy registry entry</button>
+              <button class="btn secondary small" id="dirRegistry">Who else is listed?</button>
+              <button class="btn secondary small" id="dirRegister">Register / ping server</button>
+              <button class="btn secondary small" id="dirSync">Publish to server</button>
+              <span id="dirMsg" style="font-size:12px"></span>
+            </div>
+            <div id="dirEntryBox"></div>
+            <div class="card-sub" id="dirNodeId" style="margin-top:10px"></div>
+
+            <div class="section-title" style="margin-top:22px">Shared listings <span id="shareCount"></span></div>
+            <div class="card-sub">Tick “Share with the Tech Garage community” on an item to publish it. A listing is delisted automatically when it sells, is hidden, or you untick it.</div>
+            <div id="sharesList"></div>
+
+            <div class="section-title" style="margin-top:22px">Nearby shops on your storefront</div>
+            <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;cursor:pointer;margin:8px 0">
+              <input type="checkbox" id="dirShowNearby" style="width:auto;margin-top:3px" />
+              <span><strong>Show community listings at the bottom of your shop.</strong> Items in categories you don't stock — so a customer looking for an SSD you don't carry finds one nearby instead of leaving empty-handed.</span>
+            </label>
+            <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;cursor:pointer;margin:8px 0" id="trustedOnlyRow">
+              <input type="checkbox" id="dirTrustedOnly" style="width:auto;margin-top:3px" />
+              <span><strong>Only show shops I've invited.</strong> <span class="pill" id="trustedOnlyPill">Pro</span> Blocks listings from shops you don't know, while keeping your friends' stock. Part of the Pro upgrade — not included in this build.</span>
+            </label>
+            <button class="btn" id="dirNearbySave">Save display options</button>
+
+            <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;cursor:pointer;margin:8px 0">
+              <input type="checkbox" id="dirShowFriends" style="width:auto;margin-top:3px" />
+              <span><strong>Show the shops you've connected to on your storefront.</strong> A “shops we work with” row, separate from the item suggestions above.</span>
+            </label>
+
+            <div class="section-title" style="margin-top:22px">Connect with another shop</div>
+            <div class="card-sub">Send a friend your link, and open theirs to connect back. Connected shops always rank above strangers, and are the only ones shown if you turn on “only shops I've invited”.</div>
+            <label class="field"><span class="lbl">Your invite link — send this to a friend</span><input id="myConnectUrl" readonly /></label>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px">
+              <button class="btn secondary small" id="copyInviteUrl" type="button">Copy link</button>
+              <a class="btn secondary small" id="openConnect" target="_blank" rel="noopener">Preview the page ↗</a>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+              <label class="field" style="flex:1;min-width:240px;margin:0"><span class="lbl">Their shop link — paste what they sent you</span><input id="peerLink" placeholder="https://their-shop.example/connect" /></label>
+              <button class="btn" id="peerAdd">Connect</button>
+            </div>
+            <div id="connectMsg" style="font-size:12px;margin-top:6px"></div>
+
+            <div class="section-title" style="margin-top:22px">Connected shops <span id="friendCount"></span></div>
+            <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;cursor:pointer;margin:8px 0">
+              <input type="checkbox" id="dirShareConnections" style="width:auto;margin-top:3px" />
+              <span><strong>Let your connections see who else you've connected to.</strong>
+                This is what lets shops recommend each other — your friends can suggest their friends to you, and vice versa.
+                Who you do business with is your information, so it's off until you say so. Everything else works either way.</span>
+            </label>
+            <button class="btn secondary small" id="syncConnections" type="button">Refresh connections</button>
+            <span id="syncMsg" style="font-size:12px;margin-left:8px"></span>
+            <div id="peersList" style="margin-top:12px"></div>
+
+            <div class="section-title" style="margin-top:22px">Suggested by your connections <span id="suggCount"></span></div>
+            <div class="card-sub">Shops your connections have connected to. A shop you trust vouching for another is a better signal than proximity alone.</div>
+            <div id="suggList"></div>
+          </div>
+        </details>
+
+        <details id="visitors" class="card admin-section">
+          <summary>Visitor activity <span id="visitStats"></span></summary>
+          <div class="details-body">
+            <div class="card-sub">Who's browsing and searching your stock, with device &amp; browser details.</div>
+            <div id="visitsList"></div>
+          </div>
+        </details>
+
+        <!-- Password reset requests -->
+        <details id="resets" class="card admin-section">
+          <summary>Password reset requests</summary>
+          <div class="details-body">
+            <div class="card-sub">Recent forgot-password requests. You can also reset any user's password directly under Users.</div>
+            <div id="resetsList"></div>
+          </div>
+        </details>
+
+        <!-- Purchase requests -->
+        <details id="requests" class="card admin-section">
+          <summary>Purchase requests <span id="reqBadge"></span></summary>
+          <div class="details-body">
+            <div class="card-sub">What customers have asked to buy. New requests are highlighted.</div>
+            <div id="requestsList"></div>
+          </div>
+        </details>
+
+        <!-- Stock subscriptions -->
+        <details id="subscriptions" class="card admin-section">
+          <summary>Stock subscriptions <span id="subCount"></span></summary>
+          <div class="details-body">
+            <div class="card-sub">Signed-in users who asked to be emailed about availability changes — for a specific item or store-wide (any new stock).</div>
+            <div id="subsList"></div>
+          </div>
+        </details>
+
+        <!-- Users & access: accounts, invites, and the waitlist -->
+        <details id="users" class="card admin-section">
+          <summary>Users &amp; access <span id="wlCount"></span></summary>
+          <div class="details-body">
+            <div class="card-sub">Everyone who can sign in. <strong>Admin</strong> = full access incl. this page · <strong>Staff</strong> = manage inventory only · <strong>Customer</strong> = storefront only.</div>
+            <div id="usersList"></div>
+
+            <div class="lbl" style="margin:16px 0 6px">Add someone</div>
+            <div class="card-sub" style="margin-bottom:10px">One form for everyone: say who they are and what they can do, then either send them an invite link or set their password yourself.</div>
+            <div class="grid-3">
+              <label class="field"><span class="lbl">Name (optional)</span><input id="newName" autocomplete="off" /></label>
+              <label class="field"><span class="lbl">Email (optional)</span><input id="newEmail" autocomplete="off" /></label>
+              <label class="field"><span class="lbl">Phone (optional)</span><input id="newPhone" autocomplete="off" /></label>
+            </div>
+            <div class="grid-2">
+              <label class="field"><span class="lbl">Role</span>
+                <select id="newRole">
+                  <option value="customer">Customer — storefront only</option>
+                  <option value="user">Staff — manage inventory only</option>
+                  <option value="admin">Admin — full access + this page</option>
+                </select>
+              </label>
+              <label class="field"><span class="lbl">How they get in</span>
+                <select id="newMethod">
+                  <option value="invite">Send an invite link — they pick their own username and password</option>
+                  <option value="password">Set a username and password now</option>
+                </select>
+              </label>
+            </div>
+            <div class="grid-2" id="credFields" hidden>
+              <label class="field"><span class="lbl">Username</span><input id="newUsername" autocomplete="off" /></label>
+              <label class="field"><span class="lbl">Password (min 8)</span><input id="newPassword" type="password" autocomplete="new-password" /></label>
+            </div>
+            <div class="card-sub" id="addPersonNote" style="margin:0 0 10px"></div>
+            <button class="btn" id="addPersonBtn">Create invite link</button>
+            <div id="inviteLinkBox" style="display:none;margin-top:12px" class="fin-box">
+              <div class="lbl" style="margin-bottom:4px">Share this link:</div>
+              <div style="display:flex;gap:8px">
+                <input id="inviteLink" readonly style="flex:1" />
+                <button class="btn small" id="copyInviteBtn" type="button">Copy</button>
+              </div>
+            </div>
+            <div class="lbl" style="margin:14px 0 6px">Sent invites</div>
+            <div id="invitesList"></div>
+
+            <!-- Waitlist -->
+            <div class="section-title" style="margin-top:26px">Waitlist</div>
+            <div class="card-sub">People who requested access from the sign-up page. <strong>✓ Approve</strong> to invite them in (sends a welcome email with their invite link). <strong>✕ Decline</strong> to set them aside, or Delete to remove.</div>
+            <div id="waitlistList"></div>
+          </div>
+        </details>
+
+        <!-- Pro upgrade -->
+        <details id="upgrade" class="card admin-section">
+          <summary>Pro upgrade</summary>
+          <div class="details-body">
+            <div class="card-sub">This is the free build. The features below are not switched off — there is no code for them in this install at all.</div>
+            <div id="upgradeFeatures"></div>
+            <div id="upgradeHow" class="callout" style="margin-top:14px"></div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+  <script type="module" src="/js/admin.js?v=20260805f"></script>
+</body>
+</html>

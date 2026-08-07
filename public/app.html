@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inventory Management — Computer Resale</title>
+  <link rel="stylesheet" href="/css/style.css?v=20260805f" />
+  <link rel="stylesheet" href="/api/theme.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>" />
+</head>
+<body>
+  <header class="app-header">
+    <h1><span class="logo">💻</span> Inventory Management</h1>
+    <div class="provider-badges" id="providerBadges"></div>
+    <div class="user-menu" id="userMenu"></div>
+  </header>
+
+  <nav class="tabs">
+    <button data-view="dashboard" class="active">Dashboard</button>
+    <button data-view="inventory">Inventory</button>
+    <button data-view="pricing">Price Lookup</button>
+  </nav>
+
+  <main>
+    <!-- Dashboard -->
+    <section class="view active" id="view-dashboard">
+      <div class="kpi-grid" id="kpiGrid"></div>
+
+      <div class="card">
+        <h2>Performance</h2>
+        <div class="card-sub">Return on investment, how fast stock sells, and how much capital is tied up.</div>
+        <div class="kpi-grid" id="reportGrid" style="margin-bottom:0"></div>
+      </div>
+
+      <div class="card">
+        <h2>Aging inventory <span id="staleBadge"></span></h2>
+        <div class="card-sub">Unsold stock ranked by how long you've held it. Dead stock ties up cash — consider dropping the price.</div>
+        <div id="agingList"></div>
+      </div>
+
+      <div class="card">
+        <div class="chart-head">
+          <div>
+            <h2>Profit over time</h2>
+            <div class="card-sub" style="margin:0">Bars = profit actually banked in each period. Line = running total, carried forward from before the window.</div>
+          </div>
+          <div class="chart-controls">
+            <select id="rangeSelect" title="Time frame"></select>
+            <select id="bucketSelect" title="Group by">
+              <option value="">Auto</option>
+              <option value="day">Daily</option>
+              <option value="week">Weekly</option>
+              <option value="month">Monthly</option>
+            </select>
+          </div>
+        </div>
+        <div id="rangeSummary" class="range-summary"></div>
+        <div class="chart-wrap" id="profitChartWrap"><canvas id="profitChart"></canvas></div>
+        <div id="projectionNote" class="card-sub" style="margin:10px 0 0"></div>
+      </div>
+
+      <div class="card">
+        <h2>Profit by item <span id="barRangeNote" class="muted" style="font-size:12px;font-weight:400"></span></h2>
+        <div class="card-sub">Green = realized (sold in the selected period). Purple = projected (in stock / listed at asking price).</div>
+        <div class="chart-wrap short" id="barChartWrap"><canvas id="barChart"></canvas></div>
+      </div>
+    </section>
+
+    <!-- Inventory -->
+    <section class="view" id="view-inventory">
+      <div class="toolbar">
+        <input type="search" id="searchBox" placeholder="Search title, brand, model, serial, specs…" style="flex:1;min-width:200px" />
+        <select id="filterStatus" style="width:auto">
+          <option value="">All statuses</option>
+          <option value="in_stock">In stock</option>
+          <option value="listed">Listed</option>
+          <option value="sold">Sold</option>
+          <option value="scrapped">Scrapped</option>
+        </select>
+        <select id="filterCategory" style="width:auto">
+          <option value="">All categories</option>
+          <option value="laptop">Laptops</option>
+          <option value="desktop">Desktops</option>
+          <option value="component">Components</option>
+          <option value="device">Devices</option>
+          <option value="other">Other</option>
+        </select>
+        <button class="btn" id="addItemBtn">+ Add item</button>
+      </div>
+      <div class="toolbar toolbar-scroll" style="margin-top:-6px">
+        <span class="muted" id="itemCount" style="font-size:12px"></span>
+        <div class="spacer"></div>
+        <button class="btn secondary small" id="quickAddBtn">⚡ Quick add</button>
+        <button class="btn secondary small" id="seedBtn">Load sample</button>
+        <button class="btn secondary small" id="exportCsvBtn">Export CSV</button>
+        <button class="btn secondary small" id="backupBtn">Backup JSON</button>
+        <button class="btn secondary small" id="importBtn">Import</button>
+        <button class="btn secondary small" id="sampleCsvBtn" title="Download an editable CSV template">Sample CSV</button>
+        <button class="btn secondary small" id="sampleJsonBtn" title="Download an editable JSON template">Sample JSON</button>
+        <input type="file" id="importFile" accept=".json,.csv" style="display:none" />
+      </div>
+      <div class="card table-card" style="padding:0; overflow-x:auto;">
+        <table class="data" id="itemsTable">
+          <thead>
+            <tr>
+              <th data-sort="title">Item</th><th data-sort="category">Category</th>
+              <th data-sort="status">Status</th><th class="num" data-sort="age">Age</th>
+              <th class="num" data-sort="invested">Invested</th><th class="num" data-sort="breakeven">Break-even</th>
+              <th class="num" data-sort="price">Ask / Sold</th><th class="num" data-sort="profit">Profit</th>
+            </tr>
+          </thead>
+          <tbody id="itemsBody"></tbody>
+        </table>
+        <div class="empty" id="itemsEmpty" style="display:none">No items yet. Click “Add item” or “Load sample”.</div>
+      </div>
+    </section>
+
+    <!-- Price lookup -->
+    <section class="view" id="view-pricing">
+      <div class="card">
+        <h2>Search eBay &amp; Amazon comparables</h2>
+        <div class="card-sub">Compare against active listings and recently sold prices. Pick a <strong>listing condition</strong> so you compare like with like — a refurbished unit priced against new retail will overstate your profit. Uses live APIs when credentials are configured (set them in <a href="/admin">Admin</a>), otherwise demo data.</div>
+        <div class="toolbar">
+          <input type="text" id="lookupQuery" placeholder="e.g. ThinkPad T480 i5 16GB 256GB" style="flex:1;min-width:220px" />
+          <select id="lookupCondition" style="width:auto;min-width:150px" title="Restrict comparables to a listing condition"></select>
+          <label style="display:flex;align-items:center;gap:6px;white-space:nowrap"><input type="checkbox" id="srcEbay" checked style="width:auto" /> eBay</label>
+          <label style="display:flex;align-items:center;gap:6px;white-space:nowrap"><input type="checkbox" id="srcAmazon" checked style="width:auto" /> Amazon</label>
+          <button class="btn" id="lookupBtn">Search</button>
+        </div>
+        <div id="lookupResults"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Item drawer -->
+  <div class="overlay" id="overlay">
+    <div class="drawer">
+      <div class="drawer-head">
+        <h2 id="drawerTitle">Item</h2>
+        <button class="btn danger small" id="deleteItemBtn" style="display:none">Delete</button>
+        <button class="close-x" id="closeDrawer">&times;</button>
+      </div>
+      <div class="drawer-body" id="drawerBody"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module" src="/js/app.js?v=20260805f"></script>
+</body>
+</html>

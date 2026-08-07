@@ -1,0 +1,24 @@
+# Dependencies (project is zero-dependency, but keep this for safety)
+node_modules/
+
+# Local data & secrets
+.env
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+
+# Logs / OS
+*.log
+.DS_Store
+
+# Uploaded item images
+data/uploads/
+
+# TLS certificate + private key
+data/tls/
+
+# The premium modules are not part of this repository and must never be
+# committed here — the whole claim this build makes is that the code is absent,
+# not disabled. Ignored so a local experiment cannot be added by accident.
+pro/

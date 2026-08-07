@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>You're invited — Tech Garage</title>
+  <link rel="stylesheet" href="/css/style.css?v=20260805f" />
+  <link rel="stylesheet" href="/api/theme.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>" />
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="auth-card" id="card">
+      <div class="brand"><span class="logo">💻</span> You're invited</div>
+      <div class="sub" id="sub">Checking your invitation…</div>
+      <div class="err" id="err"></div>
+      <form id="acceptForm" style="display:none">
+        <label class="field"><span class="lbl">Choose a username</span><input id="username" autocomplete="username" /></label>
+        <label class="field"><span class="lbl">Create a password (min 8)</span><input id="password" type="password" autocomplete="new-password" /></label>
+        <button class="btn" type="submit" id="submitBtn">Create account &amp; view stock</button>
+      </form>
+    </div>
+  </div>
+  <script type="module" src="/js/invite.js?v=20260805f"></script>
+</body>
+</html>

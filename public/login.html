@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in — Tech Garage</title>
+  <link rel="stylesheet" href="/css/style.css?v=20260805f" />
+  <link rel="stylesheet" href="/api/theme.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>" />
+  <style>
+    .auth-tabs { display: flex; gap: 6px; background: rgba(127,127,127,.12); padding: 4px; border-radius: 10px; margin: 14px 0 20px; }
+    .auth-tab { flex: 1; border: 0; background: transparent; color: var(--muted); font: inherit; font-weight: 600;
+      padding: 9px 0; border-radius: 7px; cursor: pointer; }
+    .auth-tab.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.15); }
+    .notice { background: rgba(234,179,8,.12); border: 1px solid rgba(234,179,8,.35); color: var(--text);
+      padding: 11px 13px; border-radius: 9px; font-size: 13px; line-height: 1.5; margin-bottom: 16px; }
+    .ok-msg { background: rgba(22,163,74,.12); border: 1px solid rgba(22,163,74,.4); color: var(--text);
+      padding: 12px 14px; border-radius: 9px; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="brand"><span class="logo">💻</span> <span data-brand-name>Tech Garage</span></div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabSignin" type="button">Sign in</button>
+        <button class="auth-tab" id="tabSignup" type="button">Sign up</button>
+      </div>
+
+      <!-- Sign in -->
+      <form id="loginForm" data-pane="signin">
+        <div class="sub" style="margin-bottom:14px">Sign in to track your inventory.</div>
+        <div class="err" id="err"></div>
+        <label class="field"><span class="lbl">Username</span><input id="username" autocomplete="username" autofocus /></label>
+        <label class="field"><span class="lbl">Password</span><input id="password" type="password" autocomplete="current-password" /></label>
+        <button class="btn" type="submit" id="submitBtn">Sign in</button>
+        <div class="hint"><a href="/forgot">Forgot password?</a> · <a href="/">Home</a></div>
+      </form>
+
+      <!-- Sign up / request access -->
+      <div id="signupPane" data-pane="signup" style="display:none">
+        <div class="notice">🚧 <strong>Sign-ups are invite-only</strong> and there are no available slots right now. Leave your email and we'll invite you the moment a slot opens up.</div>
+        <div class="err" id="suErr"></div>
+        <form id="signupForm">
+          <label class="field"><span class="lbl">Name (optional)</span><input id="su-name" autocomplete="name" /></label>
+          <label class="field"><span class="lbl">Email</span><input id="su-email" type="email" autocomplete="email" /></label>
+          <button class="btn" type="submit" id="suBtn">Notify me when a slot opens</button>
+        </form>
+        <div class="hint"><a href="/">Home</a></div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/js/auth.js?v=20260805f"></script>
+  <script src="/js/brand.js?v=20260805f"></script>
+</body>
+</html>

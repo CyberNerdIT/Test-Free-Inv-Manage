@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shared item — Tech Garage</title>
+  <link rel="stylesheet" href="/css/style.css?v=20260805f" />
+  <link rel="stylesheet" href="/api/theme.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>" />
+  <style>
+    .share-wrap { max-width: 520px; margin: 0 auto; padding: 28px 20px 60px; }
+    .share-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      box-shadow: var(--shadow); overflow: hidden; }
+    .share-photo { width: 100%; height: 260px; object-fit: cover; background: var(--surface-2); display: block; }
+    .share-photo.placeholder { display: flex; align-items: center; justify-content: center; font-size: 64px; color: var(--muted); }
+    .share-body { padding: 22px; }
+    .share-body h1 { font-size: 22px; margin: 0 0 6px; line-height: 1.2; }
+    .share-meta { color: var(--muted); font-size: 13px; text-transform: capitalize; margin-bottom: 18px; }
+    .locked { background: var(--surface-2); border: 1px dashed var(--border); border-radius: 12px;
+      padding: 18px; text-align: center; }
+    .locked .lk-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+    .locked .lk-sub { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
+    .share-form .field { text-align: left; }
+    .share-form { margin-top: 4px; }
+    .share-note { color: var(--muted); font-size: 12.5px; margin: 10px 0 2px; }
+    .share-foot { text-align: center; margin-top: 20px; font-size: 13px; }
+    .share-err { display: none; background: rgba(220,38,38,.1); color: var(--neg); padding: 9px 12px;
+      border-radius: 8px; font-size: 13px; margin-bottom: 12px; }
+    .share-err.show { display: block; }
+    .share-ok { background: rgba(22,163,74,.12); border: 1px solid rgba(22,163,74,.4);
+      padding: 16px; border-radius: 10px; font-size: 14px; text-align: center; }
+    .share-missing { text-align: center; padding: 40px 20px; color: var(--muted); }
+  </style>
+</head>
+<body class="landing">
+  <div class="nav">
+    <div class="brand"><span class="logo">💻</span> <span data-brand-name>Tech Garage</span></div>
+    <div class="spacer"></div>
+    <a class="btn" href="/login">Sign in</a>
+  </div>
+
+  <div class="share-wrap" id="shareWrap">
+    <div class="share-missing" id="loading">Loading…</div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="/js/share.js?v=20260805f"></script>
+</body>
+</html>

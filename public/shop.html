@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Available stock — Tech Garage</title>
+  <link rel="stylesheet" href="/css/style.css?v=20260805f" />
+  <link rel="stylesheet" href="/api/theme.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>" />
+</head>
+<body>
+  <header class="app-header">
+    <h1><span class="logo">💻</span> Available Stock</h1>
+    <a class="site-link" id="shopSiteLink" target="_blank" rel="noopener" style="display:none;margin-left:14px"></a>
+    <div class="user-menu" id="userMenu"></div>
+  </header>
+  <main class="shop-main">
+    <div class="shop-intro">
+      <h2>Browse &amp; request to purchase</h2>
+      <div class="muted" style="font-size:13px">Add items to your cart, pick optional upgrades, and send your request — with multiple items you can also make an offer.</div>
+    </div>
+    <div class="shop-toolbar">
+      <input type="search" id="searchBox" placeholder="Search items, brands, specs…" style="flex:1;min-width:200px" />
+      <select id="sortSelect" title="Sort" style="width:auto;min-width:160px"></select>
+      <label class="filter-check"><input type="checkbox" id="showSold" checked style="width:auto" /> Show recently sold</label>
+      <button class="btn secondary small" id="clearFilters" type="button">Clear</button>
+    </div>
+    <div class="shop-filters">
+      <div class="cat-chips" id="catChips"></div>
+      <div class="price-filter" id="priceFilter" style="display:none">
+        <label class="lbl2" for="maxPrice">Max price: <strong id="maxPriceLabel">Any price</strong></label>
+        <input type="range" id="maxPrice" min="0" max="1000" step="25" />
+      </div>
+    </div>
+    <div class="result-count muted" id="resultCount"></div>
+    <div class="strip" id="recentStrip" style="display:none"></div>
+    <div class="shop-grid" id="shopGrid"></div>
+    <div class="strip" id="nearbyStrip" style="display:none"></div>
+    <div class="strip" id="friendsStrip" style="display:none"></div>
+    <div class="shop-empty" id="shopEmpty" style="display:none">No items are available right now. Check back soon.</div>
+  </main>
+
+  <!-- Cart drawer -->
+  <div class="cart-drawer" id="cartDrawer">
+    <div class="cart-head">
+      <h2>Your cart</h2>
+      <button class="close-x" id="cartClose">&times;</button>
+    </div>
+    <div class="cart-body" id="cartBody"></div>
+    <div class="cart-foot" id="cartFoot"></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script type="module" src="/js/shop.js?v=20260805f"></script>
+</body>
+</html>

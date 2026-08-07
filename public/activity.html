@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Activity Log — Tech Garage</title>
+  <link rel="stylesheet" href="/css/style.css?v=20260805f" />
+  <link rel="stylesheet" href="/api/theme.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>" />
+</head>
+<body>
+  <header class="app-header">
+    <h1><span class="logo">📊</span> Activity Log</h1>
+    <div class="user-menu"><a class="btn secondary small" href="/admin">← Admin</a></div>
+  </header>
+  <main class="admin-main">
+    <div class="card">
+      <h2>Storefront activity <span id="stats"></span></h2>
+      <div class="card-sub">Every view, search and purchase request, newest first. Trim old entries to keep it tidy.</div>
+      <div class="toolbar">
+        <span class="muted" id="pageInfo" style="font-size:12px"></span>
+        <div class="spacer"></div>
+        <button class="btn secondary small" data-clear="30">Clear &gt; 30 days</button>
+        <button class="btn secondary small" data-clear="90">Clear &gt; 90 days</button>
+        <button class="btn danger small" data-clear="all">Clear all</button>
+      </div>
+      <div id="log"></div>
+      <div class="toolbar" style="justify-content:center;margin-top:14px">
+        <button class="btn secondary small" id="prevBtn">‹ Newer</button>
+        <span class="muted" id="pageNum" style="font-size:13px"></span>
+        <button class="btn secondary small" id="nextBtn">Older ›</button>
+      </div>
+    </div>
+  </main>
+  <div class="toast" id="toast"></div>
+  <script type="module" src="/js/activity.js?v=20260805f"></script>
+</body>
+</html>

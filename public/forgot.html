@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forgot password — Tech Garage</title>
+  <link rel="stylesheet" href="/css/style.css?v=20260805f" />
+  <link rel="stylesheet" href="/api/theme.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>" />
+</head>
+<body>
+  <div class="auth-wrap">
+    <form class="auth-card" id="forgotForm">
+      <div class="brand"><span class="logo">💻</span> Reset password</div>
+      <div class="sub">Enter your username or email and we'll send a reset link (if email is set up). Otherwise ask the admin to reset it.</div>
+      <div class="err" id="err" style="background:rgba(22,163,74,.1);color:var(--pos)"></div>
+      <label class="field"><span class="lbl">Username or email</span><input id="identifier" autofocus /></label>
+      <button class="btn" type="submit" id="submitBtn">Send reset link</button>
+      <div class="hint"><a href="/login">← Back to sign in</a></div>
+    </form>
+  </div>
+  <script type="module">
+    const $ = (s) => document.querySelector(s);
+    $('#forgotForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      $('#submitBtn').disabled = true;
+      try {
+        const r = await fetch('/api/auth/forgot', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ identifier: $('#identifier').value.trim() }) }).then((x) => x.json());
+        const e2 = $('#err');
+        e2.textContent = r.emailed ? 'A reset link has been emailed to you. It expires in 1 hour.' : 'If that account exists, a reset link was created. If you don’t get an email, ask your admin to reset it.';
+        e2.classList.add('show');
+      } catch { $('#err').textContent = 'Something went wrong. Try again.'; $('#err').classList.add('show'); }
+      $('#submitBtn').disabled = false;
+    });
+  </script>
+</body>
+</html>
