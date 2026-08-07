@@ -1,9 +1,6 @@
 # 💻 Inventory Management — Computer Resale
 
-> **Free edition.** Everything here is the whole of what was shipped. A handful
-> of premium features are not disabled — there is no code for them in this
-> repository at all, which is why nothing in the app asks you for a licence key.
-> See [Tech Garage Pro](#tech-garage-pro) for what they are and how to get them.
+> **Free edition.** Contact us for access to the pro edition.
 
 A local web app for tracking the computers, laptops, desktops and components you
 buy, refurbish and resell. It records **what you paid**, **what you spent to get
