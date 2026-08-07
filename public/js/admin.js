@@ -1121,7 +1121,7 @@ function wireDirectory() {
     try {
       await api.put('/admin/directory', collectDirectory());
       const r = await api.get('/admin/directory/entry');
-      const issue = 'https://github.com/CyberNerdIT/InventoryManagement/issues/new'
+      const issue = 'https://github.com/CyberNerdIT/Test-Free-Inv-Manage/issues/new'
         + '?template=add-shop.yml&title=' + encodeURIComponent(`Add shop: ${r.entry.name}`);
       box.innerHTML = `<div class="callout ${r.ok && r.publiclyReachable ? 'good' : 'bad'}" style="margin-top:12px">
         ${r.ok && r.publiclyReachable

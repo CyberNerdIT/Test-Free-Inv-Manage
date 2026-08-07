@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 #
-# Inventory Management — one-line installer
+# Inventory Management (Free edition) — one-line installer
 #
-#   curl -fsSL https://raw.githubusercontent.com/CyberNerdIT/InventoryManagement-Free/HEAD/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/CyberNerdIT/Test-Free-Inv-Manage/HEAD/install.sh | bash
+#
+# That is the public Free/test repository. INV_REPO / INV_SLUG can point this at
+# a different one, but it must be public — nothing here sends a credential, so a
+# private source answers 404 to the fetch.
 #
 # Options (pass as environment variables):
 #   INV_DIR=~/apps/inventory   install location            (default: ~/.inventory-management)
@@ -38,10 +42,10 @@
 set -euo pipefail
 
 # ---- configuration -------------------------------------------------------
-REPO_URL="${INV_REPO:-https://github.com/CyberNerdIT/InventoryManagement-Free.git}"
+REPO_URL="${INV_REPO:-https://github.com/CyberNerdIT/Test-Free-Inv-Manage.git}"
 # Empty = follow the repository's default branch (whatever it is named).
 BRANCH="${INV_BRANCH:-}"
-REPO_SLUG="CyberNerdIT/InventoryManagement-Free"
+REPO_SLUG="CyberNerdIT/Test-Free-Inv-Manage"
 # Run the service as this user (root installs only). When set, the app is
 # placed in a shared location the user can read/write instead of /root.
 SERVICE_USER="${INV_SERVICE_USER:-}"
@@ -362,7 +366,7 @@ EOF
 }
 
 # ---- main ----------------------------------------------------------------
-printf '\n%sInventory Management installer%s\n\n' "$BOLD" "$RESET"
+printf '\n%sInventory Management (Free edition) installer%s\n\n' "$BOLD" "$RESET"
 ensure_node
 fetch_source
 install_launcher

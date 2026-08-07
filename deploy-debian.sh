@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 #
-# Inventory Management — one-shot Debian/Ubuntu server deployment.
+# Inventory Management (Free edition) — one-shot Debian/Ubuntu server deployment.
 #
-#   curl -fsSL https://raw.githubusercontent.com/CyberNerdIT/InventoryManagement-Free/HEAD/deploy-debian.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/CyberNerdIT/Test-Free-Inv-Manage/HEAD/deploy-debian.sh | bash
+#
+# That URL is the public Free/test repository, and it has to stay public: the
+# raw.githubusercontent endpoint serves no credentials, so a private source repo
+# returns 404 to everyone and the pipe deploys nothing. Point --slug / INV_SLUG
+# at another repository only if that one is public too.
 #
 # Takes a bare Debian box — a fresh VM, an LXC container, a VPS — to a running,
 # auto-starting service in one command. It does the things install.sh
@@ -22,32 +27,47 @@
 #
 #   root@box:~# bash deploy-debian.sh
 #
-# Options — flags, or the matching environment variables:
-#
-#   --port N              PORT               port to listen on      (default 3000)
-#   --dir PATH            INV_DIR            install location       (default /opt/inventory-management)
-#   --user NAME           INV_SERVICE_USER   service account        (default invmanage)
-#                                            pass "root" to skip creating one
-#   --branch NAME         INV_BRANCH         branch to install      (default: repo default)
-#   --slug owner/repo     INV_SLUG           source repository
-#   --tls CN              INV_TLS            name on the certificate (default: this host)
-#   --no-tls              INV_NO_TLS         serve plain HTTP instead
-#   --hosted              INV_HOSTED         mark as an instance YOU operate
-#   --support-url URL     INV_SUPPORT_URL    where a hosted customer gets help
-#   --upgrade-url URL     INV_UPGRADE_URL    where the admin page links for Pro
-#   --no-start            INV_NO_START       install and enable, but don't start
-#
-# Piping needs `-s --` before flags, because the script is bash's stdin:
-#
-#   curl -fsSL .../deploy-debian.sh | bash -s -- --port 8080 --tls shop.example
+# The options live in usage() below rather than in this comment, so `--help`
+# prints them. They used to be here and `--help` sed'd them back out of "$0" —
+# which works from a checkout and fails from the pipe above, where "$0" is the
+# string "bash" and the script only ever exists on stdin.
 #
 # Re-running is safe and is how you re-deploy: packages already present are
 # left alone, an existing service user is reused, and install.sh updates the
 # app in place. Your database, uploads and TLS material are never touched.
 set -euo pipefail
 
+usage() {
+  cat <<'EOF'
+
+Inventory Management (Free edition) — Debian/Ubuntu deployment.
+
+  curl -fsSL https://raw.githubusercontent.com/CyberNerdIT/Test-Free-Inv-Manage/HEAD/deploy-debian.sh | bash
+
+Run it as root. Options — flags, or the matching environment variables:
+
+  --port N              PORT               port to listen on      (default 3000)
+  --dir PATH            INV_DIR            install location       (default /opt/inventory-management)
+  --user NAME           INV_SERVICE_USER   service account        (default invmanage)
+                                           pass "root" to skip creating one
+  --branch NAME         INV_BRANCH         branch to install      (default: repo default)
+  --slug owner/repo     INV_SLUG           source repository (must be public)
+  --tls CN              INV_TLS            name on the certificate (default: this host)
+  --no-tls              INV_NO_TLS         serve plain HTTP instead
+  --hosted              INV_HOSTED         mark as an instance YOU operate
+  --support-url URL     INV_SUPPORT_URL    where a hosted customer gets help
+  --upgrade-url URL     INV_UPGRADE_URL    where the admin page links for Pro
+  --no-start            INV_NO_START       install and enable, but don't start
+
+Piping needs `-s --` before flags, because the script is bash's stdin:
+
+  curl -fsSL .../deploy-debian.sh | bash -s -- --port 8080 --tls shop.example
+
+EOF
+}
+
 # ---- configuration -------------------------------------------------------
-SLUG="${INV_SLUG:-CyberNerdIT/InventoryManagement-Free}"
+SLUG="${INV_SLUG:-CyberNerdIT/Test-Free-Inv-Manage}"
 BRANCH="${INV_BRANCH:-}"
 PORT="${PORT:-3000}"
 INSTALL_DIR="${INV_DIR:-/opt/inventory-management}"
@@ -101,7 +121,7 @@ while [ $# -gt 0 ]; do
     --support-url)  INV_SUPPORT_URL="$2"; export INV_SUPPORT_URL; shift 2 ;;
     --upgrade-url)  INV_UPGRADE_URL="$2"; export INV_UPGRADE_URL; shift 2 ;;
     --no-start)     DO_START=0; shift ;;
-    -h|--help)      sed -n '2,50p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help)      usage; exit 0 ;;
     *) echo "Unknown option: $1  (try --help)" >&2; exit 1 ;;
   esac
 done
@@ -119,7 +139,7 @@ warn() { printf '%s  !%s %s\n' "$YELLOW" "$RESET" "$*"; }
 die()  { printf '%s  ✗ %s%s\n' "$RED$BOLD" "$*" "$RESET" >&2; exit 1; }
 have() { command -v "$1" >/dev/null 2>&1; }
 
-printf '\n%sInventory Management — Debian deployment%s\n\n' "$BOLD" "$RESET"
+printf '\n%sInventory Management (Free edition) — Debian deployment%s\n\n' "$BOLD" "$RESET"
 
 # ---- preflight -----------------------------------------------------------
 # Fail on the first line rather than halfway through a package install: a
@@ -200,7 +220,7 @@ run_installer() {
     local ref="${BRANCH:-HEAD}"
     log "Fetching the installer from $SLUG (${BRANCH:-default branch})"
     curl -fsSL "https://raw.githubusercontent.com/$SLUG/$ref/install.sh" -o "$installer" \
-      || die "Could not download install.sh from $SLUG@$ref. Check the repository and branch names."
+      || die "Could not download install.sh from $SLUG@$ref. raw.githubusercontent.com answers 404 for a private repository as well as a missing one, so check that $SLUG is public and that '$ref' exists."
   fi
 
   log "Installing the app into $INSTALL_DIR"

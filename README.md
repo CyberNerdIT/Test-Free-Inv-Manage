@@ -1,6 +1,14 @@
 # 💻 Inventory Management — Computer Resale
 
-> **Free edition.** Contact us for access to the pro edition.
+> **Free edition.** This repository — `CyberNerdIT/Test-Free-Inv-Manage` — is the
+> public Free/test build, and it is what every install command on this page
+> pulls from. The premium modules aren't disabled here, they're absent; see
+> [Tech Garage Pro](#tech-garage-pro). Contact us for access to the Pro edition.
+>
+> The repository has to stay **public** for the one-line installers to work.
+> `raw.githubusercontent.com` and the GitHub tarball API send no credentials, so
+> a private source repository returns 404 to everyone and the pipe installs
+> nothing. Same rule applies to any fork you point `INV_SLUG` / `INV_REPO` at.
 
 A local web app for tracking the computers, laptops, desktops and components you
 buy, refurbish and resell. It records **what you paid**, **what you spent to get
@@ -55,11 +63,22 @@ For a server — a VM, an LXC container, a VPS — where you want it running as 
 service and surviving reboots:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/CyberNerdIT/InventoryManagement-Free/HEAD/deploy-debian.sh | bash
+curl -fsSL https://raw.githubusercontent.com/CyberNerdIT/Test-Free-Inv-Manage/HEAD/deploy-debian.sh | bash
 ```
 
 Run it **as root**. A stock Debian container image has no `sudo`, and needing to
 install one before you can install anything else is a poor first impression.
+
+What the box needs before that line will work:
+
+| Requirement | Why | If it's missing |
+|---|---|---|
+| Debian or Ubuntu (`apt-get` on `PATH`) | The script installs its own prerequisites through apt. | It stops immediately and points you at `install.sh`, which works on any Linux or macOS. |
+| root | It writes to `/opt`, creates a system user, and installs a systemd unit. | It stops on the first line rather than leaving a half-configured box. |
+| `curl` on the box | You need it to fetch the script in the first place; the script installs `git`, `openssl` and `ca-certificates` itself if they're absent. | `apt-get install -y curl` |
+| Outbound HTTPS to `raw.githubusercontent.com` and `github.com` | One fetches the installer, the other is the source clone. | Nothing installs — behind a proxy, set `https_proxy` before running. |
+| systemd | Auto-start on boot. | Everything still installs and the unit is still written; the script tells you the command to start it by hand. |
+| Node.js 22.5+ | The app uses the built-in `node:sqlite` module. | The installer sets up a local copy via nvm and pins the app to it — your system Node is untouched. |
 
 That single command installs the apt packages the install needs, creates the
 unprivileged `invmanage` account the service runs as, installs the app into
@@ -106,7 +125,7 @@ the command to start it by hand.
 For a laptop, a Mac, or anywhere you don't want a system service:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/CyberNerdIT/InventoryManagement-Free/HEAD/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/CyberNerdIT/Test-Free-Inv-Manage/HEAD/install.sh | bash
 ```
 
 No `curl`? Use `wget` (or `sudo apt-get install -y curl` first on Debian/Ubuntu):
@@ -135,19 +154,19 @@ Useful variants:
 
 ```bash
 # Install AND start immediately
-curl -fsSL https://raw.githubusercontent.com/CyberNerdIT/InventoryManagement-Free/HEAD/install.sh | bash -s -- --start
+curl -fsSL https://raw.githubusercontent.com/CyberNerdIT/Test-Free-Inv-Manage/HEAD/install.sh | bash -s -- --start
 
 # Install as an always-on background service (systemd on Linux, launchd on macOS)
-curl -fsSL https://raw.githubusercontent.com/CyberNerdIT/InventoryManagement-Free/HEAD/install.sh | bash -s -- --service
+curl -fsSL https://raw.githubusercontent.com/CyberNerdIT/Test-Free-Inv-Manage/HEAD/install.sh | bash -s -- --service
 
 # Auto-install Node.js via nvm if it's missing/too old, custom port + location
-curl -fsSL https://raw.githubusercontent.com/CyberNerdIT/InventoryManagement-Free/HEAD/install.sh | INV_AUTO_NODE=1 PORT=8080 INV_DIR=~/apps/inventory bash
+curl -fsSL https://raw.githubusercontent.com/CyberNerdIT/Test-Free-Inv-Manage/HEAD/install.sh | INV_AUTO_NODE=1 PORT=8080 INV_DIR=~/apps/inventory bash
 ```
 
 ```bash
 # Install as root but run the service under an unprivileged user,
 # with the app in /opt/inventory-management (owned by that user):
-wget -qO- https://raw.githubusercontent.com/CyberNerdIT/InventoryManagement-Free/HEAD/install.sh | INV_SERVICE_USER=invmanage bash
+wget -qO- https://raw.githubusercontent.com/CyberNerdIT/Test-Free-Inv-Manage/HEAD/install.sh | INV_SERVICE_USER=invmanage bash
 ```
 
 Options: `PORT`, `INV_DIR`, `INV_BRANCH` (defaults to the repo's default

@@ -10,12 +10,16 @@
 set -euo pipefail
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
-# The repository this install follows. Override for a fork:  INV_SLUG=owner/repo
-SLUG="${INV_SLUG:-CyberNerdIT/InventoryManagement-Free}"
+# The repository this install follows — the public Free/test build. Override for
+# a fork:  INV_SLUG=owner/repo  (it has to be public; see below).
+SLUG="${INV_SLUG:-CyberNerdIT/Test-Free-Inv-Manage}"
 
 # No credentials anywhere in here: this repository is public, so an update is a
 # plain download. Keeping secrets out of the routine update path means a bad
-# token can never break the thing that ships bug fixes.
+# token can never break the thing that ships bug fixes. The flip side is that a
+# private SLUG cannot work — the tarball endpoint would answer 404 with no way
+# to authenticate — which is why the deploy and install scripts pull from the
+# public repo too.
 dl() {
   if command -v curl >/dev/null 2>&1; then curl -fsSL "$1"
   else wget -qO- "$1"; fi
@@ -90,11 +94,19 @@ fi
 PORT="$(sed -n 's/.*PORT=\([0-9]\+\).*/\1/p' /etc/systemd/system/inventory.service 2>/dev/null | head -1)"
 PORT="${PORT:-3000}"
 sleep 1
-if command -v curl >/dev/null 2>&1; then
-  LIVE="$(curl -fsSL "http://127.0.0.1:$PORT/api/health" 2>/dev/null || true)"
-else
-  LIVE="$(wget -qO- "http://127.0.0.1:$PORT/api/health" 2>/dev/null || true)"
-fi
+# HTTPS first, then plain HTTP. deploy-debian.sh turns TLS on by default, and a
+# TLS listener answers a plain-HTTP request by closing the connection — so an
+# http-only probe came back empty on every correctly-updated box and printed the
+# "a stale process is still serving old code" warning below. That warning has to
+# mean something when it appears, which it cannot if it appears every time.
+# -k because the certificate is self-signed and we are talking to 127.0.0.1: the
+# question here is "which build answered", not "do I trust this host".
+probe() {
+  if command -v curl >/dev/null 2>&1; then curl -fsSk --max-time 5 "$1" 2>/dev/null
+  else wget -qO- --no-check-certificate --timeout=5 "$1" 2>/dev/null; fi
+}
+LIVE="$(probe "https://127.0.0.1:$PORT/api/health" || true)"
+[ -n "$LIVE" ] || LIVE="$(probe "http://127.0.0.1:$PORT/api/health" || true)"
 echo "==> Health on port $PORT: ${LIVE:-<no response>}"
 if printf '%s' "$LIVE" | grep -q "\"build\":\"$EXPECTED_BUILD\""; then
   echo "==> OK — running the latest build ($EXPECTED_BUILD)."

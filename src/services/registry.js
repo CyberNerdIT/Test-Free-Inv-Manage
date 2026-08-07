@@ -20,7 +20,7 @@ import { normalizeRegion, regionDistance, sanitizeRemoteListing } from './direct
 
 /** Where the shop list lives. Overridable so forks and tests can point elsewhere. */
 export const DEFAULT_REGISTRY_URL =
-  'https://raw.githubusercontent.com/CyberNerdIT/InventoryManagement/main/directory/nodes.json';
+  'https://raw.githubusercontent.com/CyberNerdIT/Test-Free-Inv-Manage/main/directory/nodes.json';
 
 const HTTPS_URL = /^https?:\/\/[^\s<>"']+$/i;
 
