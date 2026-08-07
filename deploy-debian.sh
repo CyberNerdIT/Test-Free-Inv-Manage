@@ -217,7 +217,13 @@ run_installer() {
   else
     INSTALLER_TMP="$(mktemp "${TMPDIR:-/tmp}/inv-install.XXXXXX.sh")"
     installer="$INSTALLER_TMP"
-    local ref="${BRANCH:-HEAD}"
+    # raw.githubusercontent accepts a bare ref or a fully-qualified one, and only
+    # the fully-qualified form is unambiguous for a branch with a slash in it —
+    # "owner/repo/feature/x/install.sh" gives the CDN no way to know where the
+    # branch ends and the path begins, and it guesses wrong. HEAD is not a
+    # refs/heads/ ref, so it is passed through as-is.
+    local ref="HEAD"
+    [ -n "$BRANCH" ] && ref="refs/heads/$BRANCH"
     log "Fetching the installer from $SLUG (${BRANCH:-default branch})"
     curl -fsSL "https://raw.githubusercontent.com/$SLUG/$ref/install.sh" -o "$installer" \
       || die "Could not download install.sh from $SLUG@$ref. raw.githubusercontent.com answers 404 for a private repository as well as a missing one, so check that $SLUG is public and that '$ref' exists."
