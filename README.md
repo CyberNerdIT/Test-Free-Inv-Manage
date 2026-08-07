@@ -112,7 +112,7 @@ curl -fsSL https://raw.githubusercontent.com/CyberNerdIT/InventoryManagement-Fre
 No `curl`? Use `wget` (or `sudo apt-get install -y curl` first on Debian/Ubuntu):
 
 ```bash
-wget -qO- https://raw.githubusercontent.com/CyberNerdIT/InventoryManagement-Free/HEAD/install.sh | bash
+wget -qO- https://raw.githubusercontent.com/CyberNerdIT/Test-Free-Inv-Manage/HEAD/install.sh | bash
 ```
 
 The installer itself works with either `curl` or `wget`, and needs neither if
